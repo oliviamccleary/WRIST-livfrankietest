@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Editor - oliviamccleary/WRIST-livfrankietest</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			overflow-x: hidden;
+		}
+		::-webkit-scrollbar {
+			display: none;
+		}
+		:root {
+			--blue-dark: rgb(30, 64, 88);
+			--grey-light: #f3f3f2;
+			--grey-mid: #8591a9;
+			--white-soft: #ffffff;
+		}
+		body,
+		input,
+		textarea,
+		label,
+		button {
+			font-family: "Segoe UI", sans-serif;
+			font-size: 14px;
+			color: var(--blue-dark);
+		}
+
+		/* Table Base */
+		table {
+			width: 100%;
+			table-layout: fixed;
+			border-collapse: collapse;
+			font-family: sans-serif;
+			font-size: 14px;
+			margin-top: 40px;
+		}
+		thead th {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+			color: rgb(54, 75, 90);
+			font-weight: bold;
+			text-align: left;
+			vertical-align: top;
+			padding: 8px;
+			border: none;
+			word-wrap: break-word;
+		}
+		tbody td {
+			border: none;
+			margin-left: 10px;
+			padding: 8px;
+			text-align: left;
+			vertical-align: top;
+			word-wrap: break-word;
+		}
+		tbody tr[data-depth="0"] {
+			background: #004466 !important;
+			color: #fff;
+		}
+		tbody tr:not([data-depth="0"]) {
+			background: rgba(66, 110, 168, 0.09);
+			color: #000;
+			border-top: 1px solid #ccc;
+		}
+		tbody tr + tr {
+			border-top: 4px solid #fff;
+		}
+		tr.clickable {
+			cursor: pointer;
+		}
+
+		/* Sticky Header Utility */
+		.sticky-header {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+		}
+
+		/* Truncate & Expand Arrows */
+		.truncate {
+			display: -webkit-box;
+			-webkit-line-clamp: 4;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+		.arrow {
+			display: inline-block;
+			width: 0.6em;
+			margin-right: 4px;
+			color: inherit;
+		}
+		tr[data-has-children="true"] .arrow::before {
+			content: "▶";
+			font-size: 0.8em;
+			transition: transform 0.2s;
+		}
+		tr.expanded .arrow::before {
+			content: "▼";
+		}
+
+		/* Row Highlighting & Deletion Animation */
+		tr.highlight-sticky {
+			background-color: #e6f7ff !important;
+			transition: background-color 0.5s ease;
+		}
+		tr.deletion-gap {
+			height: 10px;
+			background-color: #ffcccc;
+			animation: flash-fade 1s forwards;
+			transition: background-color 1s ease;
+		}
+		@keyframes flash-fade {
+			0% { background-color: #ff4d4d; }
+			100% { background-color: transparent; }
+		}
+		tr.empty-placeholder td {
+			background: #f8f8f8;
+			border-top: 2px dashed #ccc;
+		}
+
+		/* Cardinality Cell */
+		td.cardinality {
+			white-space: nowrap;
+			font-family: monospace;
+		}
+
+		/* Checkbox Column */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 80px;
+			max-width: 80px;
+			padding: 8px 4px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		table td:nth-child(9) input[type="checkbox"] {
+			margin: 0;
+			transform: scale(0.9);
+		}
+
+		/* Actions Column (Right Sticky) */
+		table th:nth-child(10) {
+			position: sticky;
+			top: 0;
+			right: 0;
+			z-index: 4;
+			background: #fff;
+		}
+		table td:nth-child(10) {
+			position: sticky;
+			right: 0;
+			z-index: 1;
+		}
+
+		/* Fixed Width for MRO Column */
+		table th:nth-child(1),
+		table td:nth-child(1) {
+			width: 60px;
+			max-width: 60px;
+			overflow: hidden;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		/* Allow Name Column to Expand */
+		table th:nth-child(2),
+		table td:nth-child(2) {
+			width: auto;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		td, th {
+			word-break: break-word;
+			overflow-wrap: break-word;
+		}
+
+		/* Reduce the width of the information type column */
+		table th:nth-child(6),
+		table td:nth-child(6) ,
+		table th:nth-child(7),
+		table td:nth-child(7),
+		table th:nth-child(8),
+		table td:nth-child(8) {
+			width: 120px;
+			max-width: 120px;
+		}
+
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			min-width: 140px;
+		}
+
+		thead th:nth-child(1) {
+ 			vertical-align: middle;
+			text-align: center;
+		}
+
+		/* Narrow the checkbox column properly */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 80px;
+			max-width: 80px;
+			min-width: unset;
+		}
+
+		/* Widen the "Derived From" column (now column 9 in this setup) */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 140px;
+			max-width: 140px;
+			white-space: normal;
+		}
+
+		table th,
+		table td {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+			color: rgb(54, 75, 90);
+			font-weight: bold;
+			text-align: left;
+			vertical-align: middle; /* ✅ align all headers vertically */
+			padding: 8px;
+			border: none;
+			word-wrap: break-word;
+			height: 100%; /* optional for consistency */
+		}
+
+
+	</style>
+</head>
+<body>
+	<div style="max-height: 95vh; overflow-x: auto; overflow-y: auto;">
+		<table>
+			<thead>
+				<tr class="sticky-header">
+					<th>MRO</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Value Sets</th>
+					<th>Implementation Guidance</th>
+					<th>Information Type</th>
+					<th>Data Type</th>
+					<th>Cardinality</th>
+					<th>Derived From</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+				
+				
+				
+				
+				<tr data-id="root-0" data-parent-id="" data-depth="0" data-has-children="false" class="">
+					<td style="padding-left: 0px;">M</td>
+					<td style="padding-left: 0px;">
+						<span class="arrow"></span>
+						<div class="truncate">Item</div>
+					</td>
+					<td><div class="truncate" title=""><p><br></p></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""><p><br></p></div></td>
+					<td><div class="truncate">Record</div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate"></div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1" data-parent-id="" data-depth="0" data-has-children="true" class="">
+					<td style="padding-left: 0px;">R</td>
+					<td style="padding-left: 0px;">
+						<span class="arrow"></span>
+						<div class="truncate">GP practice record entry</div>
+					</td>
+					<td><div class="truncate" title="This is an GP practice record entry. There may be 0 to many record entries under a section. Each record entry is made up of a number of elements or data items"><p>This is an GP practice record entry. There may be 0 to many record entries under a section. Each record entry is made up of a number of elements or data items</p></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""><p><br></p></div></td>
+					<td><div class="truncate">Record</div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/GP practice record entry@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-0" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">GP name</div>
+					</td>
+					<td><div class="truncate" title="The name of the person&#39;s GP. If the person is registered with a GP practice, their usual GP name will be something volunteered by the person or their representative.">The name of the person's GP. If the person is registered with a GP practice, their usual GP name will be something volunteered by the person or their representative.</div></td>
+					<td><div class="truncate">Free text</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-1" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">GP practice details</div>
+					</td>
+					<td><div class="truncate" title="Name and address of the person&#39;s registered GP practice Registered GP practice details are available from the Person Demographics Service (PDS), or volunteered from the person or their representative. Include details of the practice name and address.">Name and address of the person's registered GP practice Registered GP practice details are available from the Person Demographics Service (PDS), or volunteered from the person or their representative. Include details of the practice name and address.</div></td>
+					<td><div class="truncate">Free text</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP practice details@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-2" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">M</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">GP practice identifier</div>
+					</td>
+					<td><div class="truncate" title="The identifier of the registered GP practice.">The identifier of the registered GP practice.</div></td>
+					<td><div class="truncate">
+                         &lt;div&gt;NHS data dictionary : - &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/general_medical_practice_code__patient_registration_.html?hl=general%2Cmedical%2Cpractice%2Ccode%2Cpatient%2Cregistration&#34; target=&#34;&#34; title=&#34;&#34;&gt;General medical practice code (patient registration)&lt;/a&gt;
+                            &lt;br clear=&#34;none&#34;/&gt;
+                        &lt;/div&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP practice identifier@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		const data = {"component_sets": [{"id": "14829dbd389ef0d392a10e3288a9766c32466e4f", "name": "WRIST-Development/WRIST-core-information-standard"}], "concept": [{"derivedFrom": "", "description": "\u003cp\u003e\u003cbr\u003e\u003c/p\u003e", "implementationGuidance": "\u003cp\u003e\u003cbr\u003e\u003c/p\u003e", "informationType": "Record", "isComponent": true, "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "M", "name": "Item", "relationshipType": "specialisation", "type": "item", "valueDomain": [{"type": "CD"}], "valueSets": ""}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The name of the person\u0027s GP. If the person is registered with a GP practice, their usual GP name will be something volunteered by the person or their representative.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "GP name", "type": "item", "valueDomain": [{"property": [{"maxLength": "70"}], "type": "string"}], "valueSets": "Free text"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP practice details@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Name and address of the person\u0027s registered GP practice Registered GP practice details are available from the Person Demographics Service (PDS), or volunteered from the person or their representative. Include details of the practice name and address.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "GP practice details", "type": "item", "valueDomain": [{"property": [{"maxLength": "150"}], "type": "text"}], "valueSets": "Free text"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/GP practice record entry/GP practice identifier@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The identifier of the registered GP practice.", "maximumMultiplicity": "1", "minimumMultiplicity": "1", "mro": "M", "name": "GP practice identifier", "type": "item", "valueDomain": [{"property": [{"maxLength": "6"}], "type": "string"}], "valueSets": "\n                         \u003cdiv\u003eNHS data dictionary : - \u003ca href=\"https://datadictionary.nhs.uk/data_elements/general_medical_practice_code__patient_registration_.html?hl=general%2Cmedical%2Cpractice%2Ccode%2Cpatient%2Cregistration\" target=\"\" title=\"\"\u003eGeneral medical practice code (patient registration)\u003c/a\u003e\n                            \u003cbr clear=\"none\"/\u003e\n                        \u003c/div\u003e \n                    "}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/GP practice record entry@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "\u003cp\u003eThis is an GP practice record entry. There may be 0 to many record entries under a section. Each record entry is made up of a number of elements or data items\u003c/p\u003e", "implementationGuidance": "\u003cp\u003e\u003cbr\u003e\u003c/p\u003e", "informationType": "Record", "isComponent": true, "maximumMultiplicity": "*", "minimumMultiplicity": "0", "mro": "R", "name": "GP practice record entry", "relationshipType": "specialisation", "type": "group", "valueDomain": [{"type": "CD"}]}], "description": "\u003cp\u003elivfrankietest\u003c/p\u003e", "name": "livfrankietest", "version": "1.0.0"};
+		document.addEventListener('DOMContentLoaded', () => {
+		const rows = Array.from(document.querySelectorAll('tr[data-id]'));
+
+		function toggleRows(pid, show) {
+			rows.forEach(r => {
+				if (r.getAttribute('data-parent-id') === pid) {
+					r.classList.toggle('hidden', !show);
+					if (!show) {
+						r.classList.remove('expanded');
+						toggleRows(r.getAttribute('data-id'), false);
+					}
+				}
+			});
+		}
+
+		rows.filter(r => r.getAttribute('data-has-children') === 'true').forEach(r => {
+			r.classList.add('clickable');
+			r.addEventListener('click', e => {
+				const clickedCell = e.target.closest('td');
+				if (!clickedCell) return; // ❗️ updated this line
+
+				const id = r.getAttribute('data-id');
+				const expanded = r.classList.toggle('expanded');
+				toggleRows(id, expanded);
+			});
+		});
+	});
+
+	</script>
+</body>
+</html>
