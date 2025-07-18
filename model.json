@@ -12,13 +12,21 @@
     {
       "name": "Item",
       "mro": "M",
-      "description": "",
+      "description": "<p><br></p>",
       "valueSets": "",
-      "implementationGuidance": "",
+      "implementationGuidance": "<p><br></p>",
       "informationType": "Record",
       "type": "item",
       "minimumMultiplicity": "0",
-      "maximumMultiplicity": "1"
+      "maximumMultiplicity": "1",
+      "derivedFrom": "",
+      "isComponent": true,
+      "relationshipType": "specialisation",
+      "valueDomain": [
+        {
+          "type": "CD"
+        }
+      ]
     },
     {
       "concept": [
