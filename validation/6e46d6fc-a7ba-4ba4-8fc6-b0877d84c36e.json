@@ -1,0 +1,17 @@
+{
+  "done": true,
+  "success": true,
+  "message": {
+    "model_level_component_reference_validation": {
+      "is_valid": true,
+      "out_of_date_components": [],
+      "errors": []
+    },
+    "item_level_component_reference_validation": {
+      "is_valid": true,
+      "out_of_date_components": [],
+      "errors": []
+    }
+  },
+  "timestamp": 1752838070.053685
+}
