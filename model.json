@@ -27,6 +27,835 @@
           "type": "CD"
         }
       ]
+    },
+    {
+      "concept": [
+        {
+          "concept": [
+            {
+              "description": "The first name(s) of the person. This includes middle names.",
+              "maximumMultiplicity": "*",
+              "minimumMultiplicity": "1",
+              "mro": "M",
+              "name": "Person first name",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary :-  <a href=\"https://datadictionary.nhs.uk/data_elements/person_given_name.html?hl=person%2Cgiven%2Cname\" target=\"\" title=\"\">Person given name</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person first name@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "The family name or surname of the person",
+              "maximumMultiplicity": "*",
+              "minimumMultiplicity": "1",
+              "mro": "M",
+              "name": "Person family name",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary : -  <a href=\"https://datadictionary.nhs.uk/data_elements/person_family_name.html\" target=\"\" title=\"\">Person family name</a> \n                         <br clear=\"none\"/> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person family name@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "The name by which a person wishes to be addressed. The preferred name volunteered by the person or a preferred name given by PDS that the person has asked to be called by.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Person preferred name",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "70"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary: -  <a href=\"https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname\" target=\"\" title=\"\">Person full name</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person preferred name@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Person's title",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Title",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary: -  <a href=\"https://www.datadictionary.nhs.uk/data_dictionary/data_field_notes/p/pers/person_title_de.asp?shownav=1\" target=\"\" title=\"\">Person title</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Title@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "A textual suffix that may be added to the end of a PERSON's name, for example, OBE, MBE, BSc, JP, GM",
+              "maximumMultiplicity": "*",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Person name suffix",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary: -  <a href=\"https://datadictionary.nhs.uk/data_elements/person_name_suffix.html\" target=\"\" title=\"\">Person suffix</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person name suffix@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "The full name of the person in text representation.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Person full name",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "70"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary :-  <a class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname\" target=\"\" title=\"\">Patient full name</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person full name@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            }
+          ],
+          "description": "Details of the person's name",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "1",
+          "mro": "M",
+          "name": "Person name",
+          "type": "group",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The date of birth of the person.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "1",
+          "mro": "M",
+          "name": "Date of birth",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "timeStampPrecision": "YMD!"
+                }
+              ],
+              "type": "date"
+            }
+          ],
+          "valueSets": "NHS data dictionary:-  <a href=\"https://datadictionary.nhs.uk/data_elements/person_birth_date.html?hl=person%2Cbirth%2Cdate\" target=\"\" title=\"\">Person birth date</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Date of birth@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The person's stated gender.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Gender",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "1"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a href=\"https://datadictionary.nhs.uk/data_elements/person_stated_gender_code.html?hl=person%2Cstated%2Cgender%2Ccode\" target=\"\" title=\"\">Person stated gender code</a> \n                     <br clear=\"none\"/> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Gender@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The ethnicity of the person as specified by the person.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Ethnicity",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "2"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a href=\"https://datadictionary.nhs.uk/data_elements/ethnic_category.html\" target=\"\" title=\"\">Ethnic category</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Ethnicity@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The religious affiliation as specified by the person.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Religion",
+          "type": "item",
+          "valueSets": "\n                     <div>SNOMED_CT:- <a class=\"\" href=\"https://termbrowser.nhs.uk/?perspective=full&conceptId1=999000531000000100&edition=uk-edition&server=https://termbrowser.nhs.uk/sct-browser-api/snomed&langRefset=999001261000000100,999000691000001104\" target=\"\" title=\"\">Religion</a>\n                        <br clear=\"none\"/>\n                    </div> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Religion@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The person\u2019s phenotypic sex. Determines how the person will be treated clinically.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "name": "Sex",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "1"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary: -  <a class=\"\" href=\"https://www.datadictionary.nhs.uk/data_elements/person_phenotypic_sex.html\" target=\"\" title=\"\">person phenotypic sex</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Sex@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The unique identifier for a person within the NHS in England and Wales.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "NHS number",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "10"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary:-  <a href=\"https://datadictionary.nhs.uk/data_elements/nhs_number.html\" target=\"\" title=\"\">NHS number</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "Provides an indication of the reliability of an NHS Number.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "NHS number status indicator",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "2"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a class=\"\" href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/n/nhs/nhs_number_status_indicator_code_de.asp?shownav=1\" target=\"\" title=\"\">NHS number status indicator</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number status indicator@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "Country specific or local identifier, e.g. Community Health Index (CHI) in Scotland.",
+          "maximumMultiplicity": "*",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Other identifier",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "20"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "\n                     <div>NHS data dictionary: -\u00a0<a class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/local_patient_identifier__extended_.html?hl=local%2Cpatient%2Cidentifier%2Cextended\" target=\"\" title=\"\">Local patient identifier(extended)</a>, <a class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/health_and_care_number.html\" target=\"\" title=\"\">Health and care number (NI only)</a>,\u00a0<a class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/community_health_index_number.html\" target=\"\" title=\"\">Community health index number</a>\u00a0(Scotland only)</div> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Other identifier@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "concept": [
+            {
+              "description": "Person's first line of address.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "1",
+              "mro": "M",
+              "name": "Address line 1",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "\n                         <div>NHS data dictionary :-\u00a0 <a href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\">Address line 1</a>\n                            <br clear=\"none\"/>\n                        </div> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address line 1@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Person's second line of address.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Address line 2",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "\n                         <div>NHS data dictionary :- <a href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\">Address line 2</a>\n                            <br clear=\"none\"/>\n                        </div> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address line 2@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Person's third line of address.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Address line 3",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "\n                         <div>NHS data dictionary : - <a href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\">Address line 3</a>\n                        </div> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address line 3@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Person's fourth line of address.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Address line 4",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "\n                         <div>NHS data dictionary : - <a class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\">Address line 4</a>\n                            <br clear=\"none\"/>\n                        </div> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address line 4@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Person's fifth line of address.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Address line 5",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "35"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary : -  <a href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\">Address line 5</a> \n                         <br clear=\"none\"/> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address line 5@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "The person's postcode.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Postcode",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "8"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary :-  <a href=\"https://datadictionary.nhs.uk/data_elements/postcode_of_usual_address.html\" target=\"\" title=\"\">Postcode of usual address</a> \n                         <br clear=\"none\"/> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Postcode@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "The type of address e.g. Main address, Temp address",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Address type",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "1"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary : -  <a class=\"\" href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/a/add/address_association_type_de.asp?shownav=1\" target=\"\" title=\"\">Address association type</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address/Address type@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            }
+          ],
+          "description": "Person\u2019s usual place of residence, and where relevant temporary and correspondence addresses.",
+          "maximumMultiplicity": "*",
+          "minimumMultiplicity": "1",
+          "mro": "M",
+          "name": "Person's address",
+          "type": "group",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's address@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "concept": [
+            {
+              "description": "Preferred contact method, e.g. email, letter, phone, text message etc.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Preferred contact method",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "1"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary :-  <a href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/com/communication_contact_method_de.asp?shownav=1\" target=\"\" title=\"\">Communication contact method</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Preferred contact method@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "concept": [
+                {
+                  "description": "The person's telephone number",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Person's telephone number",
+                  "type": "item",
+                  "valueDomain": [
+                    {
+                      "property": [
+                        {
+                          "maxLength": "35"
+                        }
+                      ],
+                      "type": "string"
+                    }
+                  ],
+                  "valueSets": "NHS data dictionary : -  <a href=\"https://datadictionary.nhs.uk/data_elements/uk_telephone_number.html\" target=\"\" title=\"\">UK telephone number</a> \n                        ",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's telephone number details/Person's telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                },
+                {
+                  "description": "The contact type e.g. home, mobile",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Person's telephone number type",
+                  "type": "item",
+                  "valueDomain": [
+                    {
+                      "example": [
+                        {
+                          "#text": "Home",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "Mobile",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "Temp",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "Old",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "Work",
+                          "type": "valid"
+                        }
+                      ],
+                      "property": [
+                        {
+                          "maxLength": "6"
+                        }
+                      ],
+                      "type": "string"
+                    }
+                  ],
+                  "valueSets": "FHIR value set: -  <a href=\"http://hl7.org/fhir/stu3/codesystem-contact-point-use.html\" target=\"\" title=\"\">Contact point use</a> \n                        ",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's telephone number details/Person's telephone number type@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                },
+                {
+                  "description": "The preferred order of use for the telephone number",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Preference of telephone number",
+                  "type": "item",
+                  "valueSets": "Preference of use 1-5, 1 being the highest.",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's telephone number details/Preference of telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                }
+              ],
+              "description": "The person's telephone number details",
+              "maximumMultiplicity": "*",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Person's telephone number details",
+              "type": "group",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's telephone number details@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "concept": [
+                {
+                  "description": "Email address of the person.",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Person's email address",
+                  "type": "item",
+                  "valueDomain": [
+                    {
+                      "property": [
+                        {
+                          "maxLength": "255"
+                        }
+                      ],
+                      "type": "string"
+                    }
+                  ],
+                  "valueSets": "NHS data dictionary :-  <a>Contact email address</a> \n                        ",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's email address details/Person's email address@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                },
+                {
+                  "description": "The type of email address, home, work",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Person's email address type",
+                  "type": "item",
+                  "valueDomain": [
+                    {
+                      "example": [
+                        {
+                          "#text": "Home",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "Work",
+                          "type": "valid"
+                        },
+                        {
+                          "#text": "old",
+                          "type": "valid"
+                        }
+                      ],
+                      "property": [
+                        {
+                          "maxLength": "6"
+                        }
+                      ],
+                      "type": "string"
+                    }
+                  ],
+                  "valueSets": "FHIR value set: -  <a href=\"http://hl7.org/fhir/stu3/codesystem-contact-point-use.html\" target=\"\" title=\"\">Contact point use</a> \n                        ",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's email address details/Person's email address type@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                },
+                {
+                  "description": "The preferred order of use of email address",
+                  "maximumMultiplicity": "1",
+                  "minimumMultiplicity": "0",
+                  "mro": "R",
+                  "name": "Preference of email address",
+                  "type": "item",
+                  "valueSets": "Preference of use 1-5, 1 being the highest.",
+                  "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's email address details/Preference of email address@14829dbd389ef0d392a10e3288a9766c32466e4f"
+                }
+              ],
+              "description": "Details of the person's email address",
+              "maximumMultiplicity": "*",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Person's email address details",
+              "type": "group",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Person's email address details@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Contact details via fax, sms, url",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Other contact information",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "255"
+                    }
+                  ],
+                  "type": "string"
+                }
+              ],
+              "valueSets": "NHS data dictionary:-  <a href=\"https://datadictionary.nhs.uk/attributes/communication_contact_string.html\" target=\"\" title=\"\">Communication contact string</a> \n                    ",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details/Other contact information@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            }
+          ],
+          "description": "Details of the person's contact information.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Person's contact details",
+          "type": "group",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person's contact details@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "A photograph of the person for identification and to show what the person looks like normally.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Photograph",
+          "type": "item",
+          "valueDomain": [
+            {
+              "type": "identifier"
+            }
+          ],
+          "valueSets": "Mulitmedia file",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Photograph@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The country of birth of the person.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "name": "Place of birth",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "3"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/cou/country_code_de.asp?shownav=1\" target=\"\" title=\"\">Country code (birth)</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Place of birth@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "An indicator to identify the legal marital status of the person.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "name": "Marital status",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "1"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a href=\"https://www.datadictionary.nhs.uk/data_elements/person_marital_status.html?hl=marital%2Cstatus\" target=\"\" title=\"\">Person marital status</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Marital status@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "concept": [
+            {
+              "description": "Details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK.",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Immigration status",
+              "type": "item",
+              "valueSets": "Code :- 1: Asylum Seeker; 2: Exceptional leave to remain in UK; 3: Indefinite Leave to Remain in UK ;4: Limited Leave to Remain in UK; 5: No Recourse to Public Funds (NRPF); 6: Other Nationals; 7: Refugee; 8: Unaccompanied Asylum Seeker; 9 EU pre-settled status; 10: EU settled status",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Start date of immigration status",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Start date",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "timeStampPrecision": "YMDHM"
+                    }
+                  ],
+                  "type": "datetime"
+                }
+              ],
+              "valueSets": "Date and time",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Start date@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "End date of immigration status",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "End date",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "timeStampPrecision": "YMDHM"
+                    }
+                  ],
+                  "type": "datetime"
+                }
+              ],
+              "valueSets": "Date and time",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/End date@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            },
+            {
+              "description": "Relevant comments about the person's immigration status",
+              "maximumMultiplicity": "1",
+              "minimumMultiplicity": "0",
+              "mro": "R",
+              "name": "Comment",
+              "type": "item",
+              "valueDomain": [
+                {
+                  "property": [
+                    {
+                      "maxLength": "150"
+                    }
+                  ],
+                  "type": "text"
+                }
+              ],
+              "valueSets": "Free text",
+              "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Comment@14829dbd389ef0d392a10e3288a9766c32466e4f"
+            }
+          ],
+          "description": "Include details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK. Include start date, end date and any comments.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Immigration status",
+          "type": "group",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "Whether the person has given consent for organ and/or tissue donation or opted out of automatic donation where applicable. This is information provided by the national register.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Organ and tissue donation",
+          "type": "item",
+          "valueDomain": [
+            {
+              "type": "boolean"
+            }
+          ],
+          "valueSets": "Flag: - Yes or No",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Organ and tissue donation@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        },
+        {
+          "description": "The charging category relating to an overseas visitor.",
+          "maximumMultiplicity": "1",
+          "minimumMultiplicity": "0",
+          "mro": "R",
+          "name": "Overseas visitor status",
+          "type": "item",
+          "valueDomain": [
+            {
+              "property": [
+                {
+                  "maxLength": "1"
+                }
+              ],
+              "type": "string"
+            }
+          ],
+          "valueSets": "NHS data dictionary :-  <a href=\"https://datadictionary.nhs.uk/data_elements/overseas_visitor_charging_category.html\" target=\"\" title=\"\">Overseas visitor charging catergory</a> \n                ",
+          "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Overseas visitor status@14829dbd389ef0d392a10e3288a9766c32466e4f"
+        }
+      ],
+      "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics@14829dbd389ef0d392a10e3288a9766c32466e4f",
+      "description": "<p>The person's details and contact information.</p>",
+      "implementationGuidance": "<p>The mandatory information in this section is person\u2019s name, date of birth and address. There can be multiple addresses associated with a person including temporary and correspondence addresses. These are stored on the PDS. </p><p><br></p><p> Note that the Individual requirements section includes specific elements for accessible information requirements to support communication. It is recognised that some of the elements in this section are currently shared in a more granular way than currently defined in this information model. PRSB intends to address this in a later release of the information model.</p>",
+      "informationType": "Record",
+      "isComponent": true,
+      "maximumMultiplicity": "1",
+      "minimumMultiplicity": "1",
+      "mro": "M",
+      "name": "Person demographics",
+      "relationshipType": "specialisation",
+      "type": "group",
+      "valueDomain": [
+        {
+          "type": "CD"
+        }
+      ]
     }
   ]
 }
