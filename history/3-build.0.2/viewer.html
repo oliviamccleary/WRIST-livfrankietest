@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Editor - oliviamccleary/WRIST-livfrankietest</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			overflow-x: hidden;
+		}
+		::-webkit-scrollbar {
+			display: none;
+		}
+		:root {
+			--blue-dark: rgb(30, 64, 88);
+			--grey-light: #f3f3f2;
+			--grey-mid: #8591a9;
+			--white-soft: #ffffff;
+		}
+		body,
+		input,
+		textarea,
+		label,
+		button {
+			font-family: "Segoe UI", sans-serif;
+			font-size: 14px;
+			color: var(--blue-dark);
+		}
+
+		/* Table Base */
+		table {
+			width: 100%;
+			table-layout: fixed;
+			border-collapse: collapse;
+			font-family: sans-serif;
+			font-size: 14px;
+			margin-top: 40px;
+		}
+		thead th {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+			color: rgb(54, 75, 90);
+			font-weight: bold;
+			text-align: left;
+			vertical-align: top;
+			padding: 8px;
+			border: none;
+			word-wrap: break-word;
+		}
+		tbody td {
+			border: none;
+			margin-left: 10px;
+			padding: 8px;
+			text-align: left;
+			vertical-align: top;
+			word-wrap: break-word;
+		}
+		tbody tr[data-depth="0"] {
+			background: #004466 !important;
+			color: #fff;
+		}
+		tbody tr:not([data-depth="0"]) {
+			background: rgba(66, 110, 168, 0.09);
+			color: #000;
+			border-top: 1px solid #ccc;
+		}
+		tbody tr + tr {
+			border-top: 4px solid #fff;
+		}
+		tr.clickable {
+			cursor: pointer;
+		}
+
+		/* Sticky Header Utility */
+		.sticky-header {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+		}
+
+		/* Truncate & Expand Arrows */
+		.truncate {
+			display: -webkit-box;
+			-webkit-line-clamp: 4;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+		.arrow {
+			display: inline-block;
+			width: 0.6em;
+			margin-right: 4px;
+			color: inherit;
+		}
+		tr[data-has-children="true"] .arrow::before {
+			content: "▶";
+			font-size: 0.8em;
+			transition: transform 0.2s;
+		}
+		tr.expanded .arrow::before {
+			content: "▼";
+		}
+
+		/* Row Highlighting & Deletion Animation */
+		tr.highlight-sticky {
+			background-color: #e6f7ff !important;
+			transition: background-color 0.5s ease;
+		}
+		tr.deletion-gap {
+			height: 10px;
+			background-color: #ffcccc;
+			animation: flash-fade 1s forwards;
+			transition: background-color 1s ease;
+		}
+		@keyframes flash-fade {
+			0% { background-color: #ff4d4d; }
+			100% { background-color: transparent; }
+		}
+		tr.empty-placeholder td {
+			background: #f8f8f8;
+			border-top: 2px dashed #ccc;
+		}
+
+		/* Cardinality Cell */
+		td.cardinality {
+			white-space: nowrap;
+			font-family: monospace;
+		}
+
+		/* Checkbox Column */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 80px;
+			max-width: 80px;
+			padding: 8px 4px;
+			text-align: center;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		table td:nth-child(9) input[type="checkbox"] {
+			margin: 0;
+			transform: scale(0.9);
+		}
+
+		/* Actions Column (Right Sticky) */
+		table th:nth-child(10) {
+			position: sticky;
+			top: 0;
+			right: 0;
+			z-index: 4;
+			background: #fff;
+		}
+		table td:nth-child(10) {
+			position: sticky;
+			right: 0;
+			z-index: 1;
+		}
+
+		/* Fixed Width for MRO Column */
+		table th:nth-child(1),
+		table td:nth-child(1) {
+			width: 60px;
+			max-width: 60px;
+			overflow: hidden;
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		/* Allow Name Column to Expand */
+		table th:nth-child(2),
+		table td:nth-child(2) {
+			width: auto;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		td, th {
+			word-break: break-word;
+			overflow-wrap: break-word;
+		}
+
+		/* Reduce the width of the information type column */
+		table th:nth-child(6),
+		table td:nth-child(6) ,
+		table th:nth-child(7),
+		table td:nth-child(7),
+		table th:nth-child(8),
+		table td:nth-child(8) {
+			width: 120px;
+			max-width: 120px;
+		}
+
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			min-width: 140px;
+		}
+
+		thead th:nth-child(1) {
+ 			vertical-align: middle;
+			text-align: center;
+		}
+
+		/* Narrow the checkbox column properly */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 80px;
+			max-width: 80px;
+			min-width: unset;
+		}
+
+		/* Widen the "Derived From" column (now column 9 in this setup) */
+		table th:nth-child(9),
+		table td:nth-child(9) {
+			width: 140px;
+			max-width: 140px;
+			white-space: normal;
+		}
+
+		table th,
+		table td {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		thead th {
+			position: sticky;
+			top: 0;
+			background: #fff;
+			z-index: 2;
+			color: rgb(54, 75, 90);
+			font-weight: bold;
+			text-align: left;
+			vertical-align: middle; /* ✅ align all headers vertically */
+			padding: 8px;
+			border: none;
+			word-wrap: break-word;
+			height: 100%; /* optional for consistency */
+		}
+
+
+	</style>
+</head>
+<body>
+	<div style="max-height: 95vh; overflow-x: auto; overflow-y: auto;">
+		<table>
+			<thead>
+				<tr class="sticky-header">
+					<th>MRO</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Value Sets</th>
+					<th>Implementation Guidance</th>
+					<th>Information Type</th>
+					<th>Data Type</th>
+					<th>Cardinality</th>
+					<th>Derived From</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+				
+				
+				
+				
+				<tr data-id="root-0" data-parent-id="" data-depth="0" data-has-children="false" class="">
+					<td style="padding-left: 0px;">M</td>
+					<td style="padding-left: 0px;">
+						<span class="arrow"></span>
+						<div class="truncate">Item</div>
+					</td>
+					<td><div class="truncate" title=""><p><br></p></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""><p><br></p></div></td>
+					<td><div class="truncate">Record</div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate"></div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1" data-parent-id="" data-depth="0" data-has-children="true" class="">
+					<td style="padding-left: 0px;">M</td>
+					<td style="padding-left: 0px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person demographics</div>
+					</td>
+					<td><div class="truncate" title="The person&#39;s details and contact information."><p>The person's details and contact information.</p></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title="The mandatory information in this section is person’s name, date of birth and address. There can be multiple addresses associated with a person including temporary and correspondence addresses. These are stored on the PDS. Note that the Individual requirements section includes specific elements for accessible information requirements to support communication. It is recognised that some of the elements in this section are currently shared in a more granular way than currently defined in this information model. PRSB intends to address this in a later release of the information model."><p>The mandatory information in this section is person’s name, date of birth and address. There can be multiple addresses associated with a person including temporary and correspondence addresses. These are stored on the PDS. </p><p><br></p><p> Note that the Individual requirements section includes specific elements for accessible information requirements to support communication. It is recognised that some of the elements in this section are currently shared in a more granular way than currently defined in this information model. PRSB intends to address this in a later release of the information model.</p></div></td>
+					<td><div class="truncate">Record</div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-0" data-parent-id="root-1" data-depth="1" data-has-children="true" class="hidden">
+					<td style="padding-left: 20px;">M</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person name</div>
+					</td>
+					<td><div class="truncate" title="Details of the person&#39;s name">Details of the person's name</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-0-0" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">M</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person first name</div>
+					</td>
+					<td><div class="truncate" title="The first name(s) of the person. This includes middle names.">The first name(s) of the person. This includes middle names.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_given_name.html?hl=person%2Cgiven%2Cname&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person given name&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person first name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-0-1" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">M</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person family name</div>
+					</td>
+					<td><div class="truncate" title="The family name or surname of the person">The family name or surname of the person</div></td>
+					<td><div class="truncate">NHS data dictionary : -  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_family_name.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person family name&lt;/a&gt; 
+                         &lt;br clear=&#34;none&#34;/&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person family name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-0-2" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person preferred name</div>
+					</td>
+					<td><div class="truncate" title="The name by which a person wishes to be addressed. The preferred name volunteered by the person or a preferred name given by PDS that the person has asked to be called by.">The name by which a person wishes to be addressed. The preferred name volunteered by the person or a preferred name given by PDS that the person has asked to be called by.</div></td>
+					<td><div class="truncate">NHS data dictionary: -  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person full name&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person preferred name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-0-3" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Title</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s title">Person's title</div></td>
+					<td><div class="truncate">NHS data dictionary: -  &lt;a href=&#34;https://www.datadictionary.nhs.uk/data_dictionary/data_field_notes/p/pers/person_title_de.asp?shownav=1&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person title&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Title@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-0-4" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person name suffix</div>
+					</td>
+					<td><div class="truncate" title="A textual suffix that may be added to the end of a PERSON&#39;s name, for example, OBE, MBE, BSc, JP, GM">A textual suffix that may be added to the end of a PERSON's name, for example, OBE, MBE, BSc, JP, GM</div></td>
+					<td><div class="truncate">NHS data dictionary: -  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_name_suffix.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person suffix&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person name suffix@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-0-5" data-parent-id="root-1-0" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person full name</div>
+					</td>
+					<td><div class="truncate" title="The full name of the person in text representation.">The full name of the person in text representation.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a class=&#34;&#34; href=&#34;https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname&#34; target=&#34;&#34; title=&#34;&#34;&gt;Patient full name&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person full name@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-1" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">M</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Date of birth</div>
+					</td>
+					<td><div class="truncate" title="The date of birth of the person.">The date of birth of the person.</div></td>
+					<td><div class="truncate">NHS data dictionary:-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_birth_date.html?hl=person%2Cbirth%2Cdate&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person birth date&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Date of birth@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-2" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Gender</div>
+					</td>
+					<td><div class="truncate" title="The person&#39;s stated gender.">The person's stated gender.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/person_stated_gender_code.html?hl=person%2Cstated%2Cgender%2Ccode&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person stated gender code&lt;/a&gt; 
+                     &lt;br clear=&#34;none&#34;/&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Gender@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-3" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Ethnicity</div>
+					</td>
+					<td><div class="truncate" title="The ethnicity of the person as specified by the person.">The ethnicity of the person as specified by the person.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/ethnic_category.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Ethnic category&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Ethnicity@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-4" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Religion</div>
+					</td>
+					<td><div class="truncate" title="The religious affiliation as specified by the person.">The religious affiliation as specified by the person.</div></td>
+					<td><div class="truncate">
+                     &lt;div&gt;SNOMED_CT:- &lt;a class=&#34;&#34; href=&#34;https://termbrowser.nhs.uk/?perspective=full&amp;conceptId1=999000531000000100&amp;edition=uk-edition&amp;server=https://termbrowser.nhs.uk/sct-browser-api/snomed&amp;langRefset=999001261000000100,999000691000001104&#34; target=&#34;&#34; title=&#34;&#34;&gt;Religion&lt;/a&gt;
+                        &lt;br clear=&#34;none&#34;/&gt;
+                    &lt;/div&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Religion@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-5" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;"></td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Sex</div>
+					</td>
+					<td><div class="truncate" title="The person’s phenotypic sex. Determines how the person will be treated clinically.">The person’s phenotypic sex. Determines how the person will be treated clinically.</div></td>
+					<td><div class="truncate">NHS data dictionary: -  &lt;a class=&#34;&#34; href=&#34;https://www.datadictionary.nhs.uk/data_elements/person_phenotypic_sex.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;person phenotypic sex&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Sex@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-6" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">NHS number</div>
+					</td>
+					<td><div class="truncate" title="The unique identifier for a person within the NHS in England and Wales.">The unique identifier for a person within the NHS in England and Wales.</div></td>
+					<td><div class="truncate">NHS data dictionary:-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/nhs_number.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;NHS number&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-7" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">NHS number status indicator</div>
+					</td>
+					<td><div class="truncate" title="Provides an indication of the reliability of an NHS Number.">Provides an indication of the reliability of an NHS Number.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a class=&#34;&#34; href=&#34;https://www.datadictionary.nhs.uk/data_dictionary/attributes/n/nhs/nhs_number_status_indicator_code_de.asp?shownav=1&#34; target=&#34;&#34; title=&#34;&#34;&gt;NHS number status indicator&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number status indicator@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-8" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Other identifier</div>
+					</td>
+					<td><div class="truncate" title="Country specific or local identifier, e.g. Community Health Index (CHI) in Scotland.">Country specific or local identifier, e.g. Community Health Index (CHI) in Scotland.</div></td>
+					<td><div class="truncate">
+                     &lt;div&gt;NHS data dictionary: - &lt;a class=&#34;&#34; href=&#34;https://datadictionary.nhs.uk/data_elements/local_patient_identifier__extended_.html?hl=local%2Cpatient%2Cidentifier%2Cextended&#34; target=&#34;&#34; title=&#34;&#34;&gt;Local patient identifier(extended)&lt;/a&gt;, &lt;a class=&#34;&#34; href=&#34;https://datadictionary.nhs.uk/data_elements/health_and_care_number.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Health and care number (NI only)&lt;/a&gt;, &lt;a class=&#34;&#34; href=&#34;https://datadictionary.nhs.uk/data_elements/community_health_index_number.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Community health index number&lt;/a&gt; (Scotland only)&lt;/div&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Other identifier@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9" data-parent-id="root-1" data-depth="1" data-has-children="true" class="hidden">
+					<td style="padding-left: 20px;">M</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s address</div>
+					</td>
+					<td><div class="truncate" title="Person’s usual place of residence, and where relevant temporary and correspondence addresses.">Person’s usual place of residence, and where relevant temporary and correspondence addresses.</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-9-0" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">M</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address line 1</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s first line of address.">Person's first line of address.</div></td>
+					<td><div class="truncate">
+                         &lt;div&gt;NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/patient_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address line 1&lt;/a&gt;
+                            &lt;br clear=&#34;none&#34;/&gt;
+                        &lt;/div&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">1…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address line 1@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-1" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address line 2</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s second line of address.">Person's second line of address.</div></td>
+					<td><div class="truncate">
+                         &lt;div&gt;NHS data dictionary :- &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/patient_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address line 2&lt;/a&gt;
+                            &lt;br clear=&#34;none&#34;/&gt;
+                        &lt;/div&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address line 2@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-2" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address line 3</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s third line of address.">Person's third line of address.</div></td>
+					<td><div class="truncate">
+                         &lt;div&gt;NHS data dictionary : - &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/patient_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address line 3&lt;/a&gt;
+                        &lt;/div&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address line 3@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-3" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address line 4</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s fourth line of address.">Person's fourth line of address.</div></td>
+					<td><div class="truncate">
+                         &lt;div&gt;NHS data dictionary : - &lt;a class=&#34;&#34; href=&#34;https://datadictionary.nhs.uk/data_elements/patient_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address line 4&lt;/a&gt;
+                            &lt;br clear=&#34;none&#34;/&gt;
+                        &lt;/div&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address line 4@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-4" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address line 5</div>
+					</td>
+					<td><div class="truncate" title="Person&#39;s fifth line of address.">Person's fifth line of address.</div></td>
+					<td><div class="truncate">NHS data dictionary : -  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/patient_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address line 5&lt;/a&gt; 
+                         &lt;br clear=&#34;none&#34;/&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address line 5@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-5" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Postcode</div>
+					</td>
+					<td><div class="truncate" title="The person&#39;s postcode.">The person's postcode.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/postcode_of_usual_address.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Postcode of usual address&lt;/a&gt; 
+                         &lt;br clear=&#34;none&#34;/&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Postcode@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-9-6" data-parent-id="root-1-9" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Address type</div>
+					</td>
+					<td><div class="truncate" title="The type of address e.g. Main address, Temp address">The type of address e.g. Main address, Temp address</div></td>
+					<td><div class="truncate">NHS data dictionary : -  &lt;a class=&#34;&#34; href=&#34;https://www.datadictionary.nhs.uk/data_dictionary/attributes/a/add/address_association_type_de.asp?shownav=1&#34; target=&#34;&#34; title=&#34;&#34;&gt;Address association type&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s address/Address type@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-10" data-parent-id="root-1" data-depth="1" data-has-children="true" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s contact details</div>
+					</td>
+					<td><div class="truncate" title="Details of the person&#39;s contact information.">Details of the person's contact information.</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-10-0" data-parent-id="root-1-10" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Preferred contact method</div>
+					</td>
+					<td><div class="truncate" title="Preferred contact method, e.g. email, letter, phone, text message etc.">Preferred contact method, e.g. email, letter, phone, text message etc.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/com/communication_contact_method_de.asp?shownav=1&#34; target=&#34;&#34; title=&#34;&#34;&gt;Communication contact method&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Preferred contact method@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-10-1" data-parent-id="root-1-10" data-depth="2" data-has-children="true" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s telephone number details</div>
+					</td>
+					<td><div class="truncate" title="The person&#39;s telephone number details">The person's telephone number details</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s telephone number details@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-10-1-0" data-parent-id="root-1-10-1" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s telephone number</div>
+					</td>
+					<td><div class="truncate" title="The person&#39;s telephone number">The person's telephone number</div></td>
+					<td><div class="truncate">NHS data dictionary : -  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/uk_telephone_number.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;UK telephone number&lt;/a&gt; 
+                        </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s telephone number details/Person&#39;s telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-10-1-1" data-parent-id="root-1-10-1" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s telephone number type</div>
+					</td>
+					<td><div class="truncate" title="The contact type e.g. home, mobile">The contact type e.g. home, mobile</div></td>
+					<td><div class="truncate">FHIR value set: -  &lt;a href=&#34;http://hl7.org/fhir/stu3/codesystem-contact-point-use.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Contact point use&lt;/a&gt; 
+                        </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s telephone number details/Person&#39;s telephone number type@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-10-1-2" data-parent-id="root-1-10-1" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Preference of telephone number</div>
+					</td>
+					<td><div class="truncate" title="The preferred order of use for the telephone number">The preferred order of use for the telephone number</div></td>
+					<td><div class="truncate">Preference of use 1-5, 1 being the highest.</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s telephone number details/Preference of telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-10-2" data-parent-id="root-1-10" data-depth="2" data-has-children="true" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s email address details</div>
+					</td>
+					<td><div class="truncate" title="Details of the person&#39;s email address">Details of the person's email address</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…*</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s email address details@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-10-2-0" data-parent-id="root-1-10-2" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s email address</div>
+					</td>
+					<td><div class="truncate" title="Email address of the person.">Email address of the person.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a&gt;Contact email address&lt;/a&gt; 
+                        </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s email address details/Person&#39;s email address@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-10-2-1" data-parent-id="root-1-10-2" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Person&#39;s email address type</div>
+					</td>
+					<td><div class="truncate" title="The type of email address, home, work">The type of email address, home, work</div></td>
+					<td><div class="truncate">FHIR value set: -  &lt;a href=&#34;http://hl7.org/fhir/stu3/codesystem-contact-point-use.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Contact point use&lt;/a&gt; 
+                        </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s email address details/Person&#39;s email address type@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-10-2-2" data-parent-id="root-1-10-2" data-depth="3" data-has-children="false" class="hidden">
+					<td style="padding-left: 60px;">R</td>
+					<td style="padding-left: 60px;">
+						<span class="arrow"></span>
+						<div class="truncate">Preference of email address</div>
+					</td>
+					<td><div class="truncate" title="The preferred order of use of email address">The preferred order of use of email address</div></td>
+					<td><div class="truncate">Preference of use 1-5, 1 being the highest.</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Person&#39;s email address details/Preference of email address@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-10-3" data-parent-id="root-1-10" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Other contact information</div>
+					</td>
+					<td><div class="truncate" title="Contact details via fax, sms, url">Contact details via fax, sms, url</div></td>
+					<td><div class="truncate">NHS data dictionary:-  &lt;a href=&#34;https://datadictionary.nhs.uk/attributes/communication_contact_string.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Communication contact string&lt;/a&gt; 
+                    </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Person&#39;s contact details/Other contact information@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-11" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Photograph</div>
+					</td>
+					<td><div class="truncate" title="A photograph of the person for identification and to show what the person looks like normally.">A photograph of the person for identification and to show what the person looks like normally.</div></td>
+					<td><div class="truncate">Mulitmedia file</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Photograph@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-12" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;"></td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Place of birth</div>
+					</td>
+					<td><div class="truncate" title="The country of birth of the person.">The country of birth of the person.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/cou/country_code_de.asp?shownav=1&#34; target=&#34;&#34; title=&#34;&#34;&gt;Country code (birth)&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Place of birth@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-13" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;"></td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Marital status</div>
+					</td>
+					<td><div class="truncate" title="An indicator to identify the legal marital status of the person.">An indicator to identify the legal marital status of the person.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://www.datadictionary.nhs.uk/data_elements/person_marital_status.html?hl=marital%2Cstatus&#34; target=&#34;&#34; title=&#34;&#34;&gt;Person marital status&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Marital status@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-14" data-parent-id="root-1" data-depth="1" data-has-children="true" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Immigration status</div>
+					</td>
+					<td><div class="truncate" title="Include details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK. Include start date, end date and any comments.">Include details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK. Include start date, end date and any comments.</div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+					
+				
+				
+				
+				<tr data-id="root-1-14-0" data-parent-id="root-1-14" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Immigration status</div>
+					</td>
+					<td><div class="truncate" title="Details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK.">Details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK.</div></td>
+					<td><div class="truncate">Code :- 1: Asylum Seeker; 2: Exceptional leave to remain in UK; 3: Indefinite Leave to Remain in UK ;4: Limited Leave to Remain in UK; 5: No Recourse to Public Funds (NRPF); 6: Other Nationals; 7: Refugee; 8: Unaccompanied Asylum Seeker; 9 EU pre-settled status; 10: EU settled status</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-14-1" data-parent-id="root-1-14" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Start date</div>
+					</td>
+					<td><div class="truncate" title="Start date of immigration status">Start date of immigration status</div></td>
+					<td><div class="truncate">Date and time</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Start date@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-14-2" data-parent-id="root-1-14" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">End date</div>
+					</td>
+					<td><div class="truncate" title="End date of immigration status">End date of immigration status</div></td>
+					<td><div class="truncate">Date and time</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/End date@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-14-3" data-parent-id="root-1-14" data-depth="2" data-has-children="false" class="hidden">
+					<td style="padding-left: 40px;">R</td>
+					<td style="padding-left: 40px;">
+						<span class="arrow"></span>
+						<div class="truncate">Comment</div>
+					</td>
+					<td><div class="truncate" title="Relevant comments about the person&#39;s immigration status">Relevant comments about the person's immigration status</div></td>
+					<td><div class="truncate">Free text</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Comment@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+				
+				<tr data-id="root-1-15" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Organ and tissue donation</div>
+					</td>
+					<td><div class="truncate" title="Whether the person has given consent for organ and/or tissue donation or opted out of automatic donation where applicable. This is information provided by the national register.">Whether the person has given consent for organ and/or tissue donation or opted out of automatic donation where applicable. This is information provided by the national register.</div></td>
+					<td><div class="truncate">Flag: - Yes or No</div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Organ and tissue donation@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				<tr data-id="root-1-16" data-parent-id="root-1" data-depth="1" data-has-children="false" class="hidden">
+					<td style="padding-left: 20px;">R</td>
+					<td style="padding-left: 20px;">
+						<span class="arrow"></span>
+						<div class="truncate">Overseas visitor status</div>
+					</td>
+					<td><div class="truncate" title="The charging category relating to an overseas visitor.">The charging category relating to an overseas visitor.</div></td>
+					<td><div class="truncate">NHS data dictionary :-  &lt;a href=&#34;https://datadictionary.nhs.uk/data_elements/overseas_visitor_charging_category.html&#34; target=&#34;&#34; title=&#34;&#34;&gt;Overseas visitor charging catergory&lt;/a&gt; 
+                </div></td>
+					<td><div class="truncate" title=""></div></td>
+					<td><div class="truncate"></div></td>
+					<td><div class="truncate"></div></td>
+					<td class="cardinality">0…1</td>
+					<td><div class="truncate">WRIST-Development/WRIST-core-information-standard/Person demographics/Overseas visitor status@14829dbd389ef0d392a10e3288a9766c32466e4f</div></td>
+				</tr>
+				
+				
+				
+				
+				
+				
+			</tbody>
+		</table>
+	</div>
+
+	<script>
+		const data = {"component_sets": [{"id": "14829dbd389ef0d392a10e3288a9766c32466e4f", "name": "WRIST-Development/WRIST-core-information-standard"}], "concept": [{"derivedFrom": "", "description": "\u003cp\u003e\u003cbr\u003e\u003c/p\u003e", "implementationGuidance": "\u003cp\u003e\u003cbr\u003e\u003c/p\u003e", "informationType": "Record", "isComponent": true, "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "M", "name": "Item", "relationshipType": "specialisation", "type": "item", "valueDomain": [{"type": "CD"}], "valueSets": ""}, {"concept": [{"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person first name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The first name(s) of the person. This includes middle names.", "maximumMultiplicity": "*", "minimumMultiplicity": "1", "mro": "M", "name": "Person first name", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_given_name.html?hl=person%2Cgiven%2Cname\" target=\"\" title=\"\"\u003ePerson given name\u003c/a\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person family name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The family name or surname of the person", "maximumMultiplicity": "*", "minimumMultiplicity": "1", "mro": "M", "name": "Person family name", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary : -  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_family_name.html\" target=\"\" title=\"\"\u003ePerson family name\u003c/a\u003e \n                         \u003cbr clear=\"none\"/\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person preferred name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The name by which a person wishes to be addressed. The preferred name volunteered by the person or a preferred name given by PDS that the person has asked to be called by.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person preferred name", "type": "item", "valueDomain": [{"property": [{"maxLength": "70"}], "type": "string"}], "valueSets": "NHS data dictionary: -  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname\" target=\"\" title=\"\"\u003ePerson full name\u003c/a\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Title@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s title", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Title", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary: -  \u003ca href=\"https://www.datadictionary.nhs.uk/data_dictionary/data_field_notes/p/pers/person_title_de.asp?shownav=1\" target=\"\" title=\"\"\u003ePerson title\u003c/a\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person name suffix@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "A textual suffix that may be added to the end of a PERSON\u0027s name, for example, OBE, MBE, BSc, JP, GM", "maximumMultiplicity": "*", "minimumMultiplicity": "0", "mro": "R", "name": "Person name suffix", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary: -  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_name_suffix.html\" target=\"\" title=\"\"\u003ePerson suffix\u003c/a\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name/Person full name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The full name of the person in text representation.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person full name", "type": "item", "valueDomain": [{"property": [{"maxLength": "70"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/person_full_name.html?hl=person%2Cname\" target=\"\" title=\"\"\u003ePatient full name\u003c/a\u003e \n                    "}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person name@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Details of the person\u0027s name", "maximumMultiplicity": "1", "minimumMultiplicity": "1", "mro": "M", "name": "Person name", "type": "group"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Date of birth@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The date of birth of the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "1", "mro": "M", "name": "Date of birth", "type": "item", "valueDomain": [{"property": [{"timeStampPrecision": "YMD!"}], "type": "date"}], "valueSets": "NHS data dictionary:-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_birth_date.html?hl=person%2Cbirth%2Cdate\" target=\"\" title=\"\"\u003ePerson birth date\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Gender@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The person\u0027s stated gender.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Gender", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/person_stated_gender_code.html?hl=person%2Cstated%2Cgender%2Ccode\" target=\"\" title=\"\"\u003ePerson stated gender code\u003c/a\u003e \n                     \u003cbr clear=\"none\"/\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Ethnicity@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The ethnicity of the person as specified by the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Ethnicity", "type": "item", "valueDomain": [{"property": [{"maxLength": "2"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/ethnic_category.html\" target=\"\" title=\"\"\u003eEthnic category\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Religion@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The religious affiliation as specified by the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Religion", "type": "item", "valueSets": "\n                     \u003cdiv\u003eSNOMED_CT:- \u003ca class=\"\" href=\"https://termbrowser.nhs.uk/?perspective=full\u0026conceptId1=999000531000000100\u0026edition=uk-edition\u0026server=https://termbrowser.nhs.uk/sct-browser-api/snomed\u0026langRefset=999001261000000100,999000691000001104\" target=\"\" title=\"\"\u003eReligion\u003c/a\u003e\n                        \u003cbr clear=\"none\"/\u003e\n                    \u003c/div\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Sex@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The person\u2019s phenotypic sex. Determines how the person will be treated clinically.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "name": "Sex", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary: -  \u003ca class=\"\" href=\"https://www.datadictionary.nhs.uk/data_elements/person_phenotypic_sex.html\" target=\"\" title=\"\"\u003eperson phenotypic sex\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The unique identifier for a person within the NHS in England and Wales.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "NHS number", "type": "item", "valueDomain": [{"property": [{"maxLength": "10"}], "type": "string"}], "valueSets": "NHS data dictionary:-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/nhs_number.html\" target=\"\" title=\"\"\u003eNHS number\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/NHS number status indicator@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Provides an indication of the reliability of an NHS Number.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "NHS number status indicator", "type": "item", "valueDomain": [{"property": [{"maxLength": "2"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca class=\"\" href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/n/nhs/nhs_number_status_indicator_code_de.asp?shownav=1\" target=\"\" title=\"\"\u003eNHS number status indicator\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Other identifier@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Country specific or local identifier, e.g. Community Health Index (CHI) in Scotland.", "maximumMultiplicity": "*", "minimumMultiplicity": "0", "mro": "R", "name": "Other identifier", "type": "item", "valueDomain": [{"property": [{"maxLength": "20"}], "type": "string"}], "valueSets": "\n                     \u003cdiv\u003eNHS data dictionary: -\u00a0\u003ca class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/local_patient_identifier__extended_.html?hl=local%2Cpatient%2Cidentifier%2Cextended\" target=\"\" title=\"\"\u003eLocal patient identifier(extended)\u003c/a\u003e, \u003ca class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/health_and_care_number.html\" target=\"\" title=\"\"\u003eHealth and care number (NI only)\u003c/a\u003e,\u00a0\u003ca class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/community_health_index_number.html\" target=\"\" title=\"\"\u003eCommunity health index number\u003c/a\u003e\u00a0(Scotland only)\u003c/div\u003e \n                "}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address line 1@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s first line of address.", "maximumMultiplicity": "1", "minimumMultiplicity": "1", "mro": "M", "name": "Address line 1", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "\n                         \u003cdiv\u003eNHS data dictionary :-\u00a0 \u003ca href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\"\u003eAddress line 1\u003c/a\u003e\n                            \u003cbr clear=\"none\"/\u003e\n                        \u003c/div\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address line 2@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s second line of address.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Address line 2", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "\n                         \u003cdiv\u003eNHS data dictionary :- \u003ca href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\"\u003eAddress line 2\u003c/a\u003e\n                            \u003cbr clear=\"none\"/\u003e\n                        \u003c/div\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address line 3@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s third line of address.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Address line 3", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "\n                         \u003cdiv\u003eNHS data dictionary : - \u003ca href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\"\u003eAddress line 3\u003c/a\u003e\n                        \u003c/div\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address line 4@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s fourth line of address.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Address line 4", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "\n                         \u003cdiv\u003eNHS data dictionary : - \u003ca class=\"\" href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\"\u003eAddress line 4\u003c/a\u003e\n                            \u003cbr clear=\"none\"/\u003e\n                        \u003c/div\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address line 5@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u0027s fifth line of address.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Address line 5", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary : -  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/patient_usual_address.html\" target=\"\" title=\"\"\u003eAddress line 5\u003c/a\u003e \n                         \u003cbr clear=\"none\"/\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Postcode@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The person\u0027s postcode.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Postcode", "type": "item", "valueDomain": [{"property": [{"maxLength": "8"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/postcode_of_usual_address.html\" target=\"\" title=\"\"\u003ePostcode of usual address\u003c/a\u003e \n                         \u003cbr clear=\"none\"/\u003e \n                    "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address/Address type@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The type of address e.g. Main address, Temp address", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Address type", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary : -  \u003ca class=\"\" href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/a/add/address_association_type_de.asp?shownav=1\" target=\"\" title=\"\"\u003eAddress association type\u003c/a\u003e \n                    "}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s address@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Person\u2019s usual place of residence, and where relevant temporary and correspondence addresses.", "maximumMultiplicity": "*", "minimumMultiplicity": "1", "mro": "M", "name": "Person\u0027s address", "type": "group"}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Preferred contact method@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Preferred contact method, e.g. email, letter, phone, text message etc.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Preferred contact method", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/com/communication_contact_method_de.asp?shownav=1\" target=\"\" title=\"\"\u003eCommunication contact method\u003c/a\u003e \n                    "}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s telephone number details/Person\u0027s telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The person\u0027s telephone number", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s telephone number", "type": "item", "valueDomain": [{"property": [{"maxLength": "35"}], "type": "string"}], "valueSets": "NHS data dictionary : -  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/uk_telephone_number.html\" target=\"\" title=\"\"\u003eUK telephone number\u003c/a\u003e \n                        "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s telephone number details/Person\u0027s telephone number type@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The contact type e.g. home, mobile", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s telephone number type", "type": "item", "valueDomain": [{"example": [{"#text": "Home", "type": "valid"}, {"#text": "Mobile", "type": "valid"}, {"#text": "Temp", "type": "valid"}, {"#text": "Old", "type": "valid"}, {"#text": "Work", "type": "valid"}], "property": [{"maxLength": "6"}], "type": "string"}], "valueSets": "FHIR value set: -  \u003ca href=\"http://hl7.org/fhir/stu3/codesystem-contact-point-use.html\" target=\"\" title=\"\"\u003eContact point use\u003c/a\u003e \n                        "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s telephone number details/Preference of telephone number@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The preferred order of use for the telephone number", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Preference of telephone number", "type": "item", "valueSets": "Preference of use 1-5, 1 being the highest."}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s telephone number details@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The person\u0027s telephone number details", "maximumMultiplicity": "*", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s telephone number details", "type": "group"}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s email address details/Person\u0027s email address@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Email address of the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s email address", "type": "item", "valueDomain": [{"property": [{"maxLength": "255"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca\u003eContact email address\u003c/a\u003e \n                        "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s email address details/Person\u0027s email address type@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The type of email address, home, work", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s email address type", "type": "item", "valueDomain": [{"example": [{"#text": "Home", "type": "valid"}, {"#text": "Work", "type": "valid"}, {"#text": "old", "type": "valid"}], "property": [{"maxLength": "6"}], "type": "string"}], "valueSets": "FHIR value set: -  \u003ca href=\"http://hl7.org/fhir/stu3/codesystem-contact-point-use.html\" target=\"\" title=\"\"\u003eContact point use\u003c/a\u003e \n                        "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s email address details/Preference of email address@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The preferred order of use of email address", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Preference of email address", "type": "item", "valueSets": "Preference of use 1-5, 1 being the highest."}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Person\u0027s email address details@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Details of the person\u0027s email address", "maximumMultiplicity": "*", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s email address details", "type": "group"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details/Other contact information@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Contact details via fax, sms, url", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Other contact information", "type": "item", "valueDomain": [{"property": [{"maxLength": "255"}], "type": "string"}], "valueSets": "NHS data dictionary:-  \u003ca href=\"https://datadictionary.nhs.uk/attributes/communication_contact_string.html\" target=\"\" title=\"\"\u003eCommunication contact string\u003c/a\u003e \n                    "}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Person\u0027s contact details@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Details of the person\u0027s contact information.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Person\u0027s contact details", "type": "group"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Photograph@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "A photograph of the person for identification and to show what the person looks like normally.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Photograph", "type": "item", "valueDomain": [{"type": "identifier"}], "valueSets": "Mulitmedia file"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Place of birth@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The country of birth of the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "name": "Place of birth", "type": "item", "valueDomain": [{"property": [{"maxLength": "3"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://www.datadictionary.nhs.uk/data_dictionary/attributes/c/cou/country_code_de.asp?shownav=1\" target=\"\" title=\"\"\u003eCountry code (birth)\u003c/a\u003e \n                "}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Marital status@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "An indicator to identify the legal marital status of the person.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "name": "Marital status", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://www.datadictionary.nhs.uk/data_elements/person_marital_status.html?hl=marital%2Cstatus\" target=\"\" title=\"\"\u003ePerson marital status\u003c/a\u003e \n                "}, {"concept": [{"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Immigration status", "type": "item", "valueSets": "Code :- 1: Asylum Seeker; 2: Exceptional leave to remain in UK; 3: Indefinite Leave to Remain in UK ;4: Limited Leave to Remain in UK; 5: No Recourse to Public Funds (NRPF); 6: Other Nationals; 7: Refugee; 8: Unaccompanied Asylum Seeker; 9 EU pre-settled status; 10: EU settled status"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Start date@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Start date of immigration status", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Start date", "type": "item", "valueDomain": [{"property": [{"timeStampPrecision": "YMDHM"}], "type": "datetime"}], "valueSets": "Date and time"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/End date@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "End date of immigration status", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "End date", "type": "item", "valueDomain": [{"property": [{"timeStampPrecision": "YMDHM"}], "type": "datetime"}], "valueSets": "Date and time"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status/Comment@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Relevant comments about the person\u0027s immigration status", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Comment", "type": "item", "valueDomain": [{"property": [{"maxLength": "150"}], "type": "text"}], "valueSets": "Free text"}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Immigration status@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Include details of the immigration status of the person, their permissions to live and receive care and support in the UK e.g. asylum seeker, indefinite leave to remain in the UK. Include start date, end date and any comments.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Immigration status", "type": "group"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Organ and tissue donation@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "Whether the person has given consent for organ and/or tissue donation or opted out of automatic donation where applicable. This is information provided by the national register.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Organ and tissue donation", "type": "item", "valueDomain": [{"type": "boolean"}], "valueSets": "Flag: - Yes or No"}, {"derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics/Overseas visitor status@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "The charging category relating to an overseas visitor.", "maximumMultiplicity": "1", "minimumMultiplicity": "0", "mro": "R", "name": "Overseas visitor status", "type": "item", "valueDomain": [{"property": [{"maxLength": "1"}], "type": "string"}], "valueSets": "NHS data dictionary :-  \u003ca href=\"https://datadictionary.nhs.uk/data_elements/overseas_visitor_charging_category.html\" target=\"\" title=\"\"\u003eOverseas visitor charging catergory\u003c/a\u003e \n                "}], "derivedFrom": "WRIST-Development/WRIST-core-information-standard/Person demographics@14829dbd389ef0d392a10e3288a9766c32466e4f", "description": "\u003cp\u003eThe person\u0027s details and contact information.\u003c/p\u003e", "implementationGuidance": "\u003cp\u003eThe mandatory information in this section is person\u2019s name, date of birth and address. There can be multiple addresses associated with a person including temporary and correspondence addresses. These are stored on the PDS. \u003c/p\u003e\u003cp\u003e\u003cbr\u003e\u003c/p\u003e\u003cp\u003e Note that the Individual requirements section includes specific elements for accessible information requirements to support communication. It is recognised that some of the elements in this section are currently shared in a more granular way than currently defined in this information model. PRSB intends to address this in a later release of the information model.\u003c/p\u003e", "informationType": "Record", "isComponent": true, "maximumMultiplicity": "1", "minimumMultiplicity": "1", "mro": "M", "name": "Person demographics", "relationshipType": "specialisation", "type": "group", "valueDomain": [{"type": "CD"}]}], "description": "\u003cp\u003elivfrankietest\u003c/p\u003e", "name": "livfrankietest.", "version": "3-build.0.1"};
+		document.addEventListener('DOMContentLoaded', () => {
+		const rows = Array.from(document.querySelectorAll('tr[data-id]'));
+
+		function toggleRows(pid, show) {
+			rows.forEach(r => {
+				if (r.getAttribute('data-parent-id') === pid) {
+					r.classList.toggle('hidden', !show);
+					if (!show) {
+						r.classList.remove('expanded');
+						toggleRows(r.getAttribute('data-id'), false);
+					}
+				}
+			});
+		}
+
+		rows.filter(r => r.getAttribute('data-has-children') === 'true').forEach(r => {
+			r.classList.add('clickable');
+			r.addEventListener('click', e => {
+				const clickedCell = e.target.closest('td');
+				if (!clickedCell) return; // ❗️ updated this line
+
+				const id = r.getAttribute('data-id');
+				const expanded = r.classList.toggle('expanded');
+				toggleRows(id, expanded);
+			});
+		});
+	});
+
+	</script>
+</body>
+</html>
